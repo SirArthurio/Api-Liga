@@ -102,14 +102,15 @@ export const CreateEvents = async (req, res) => {
     if (req.files?.img) {
       const result = await uploadImg(req.files.img.tempFilePath);
       event.img = {
-        public_id: result.public_id,
+        event_id: result.public_id,
         secure_url: result.secure_url,
       };
-    } else {
-      console.log("No se ha recibido ninguna imgn.");
-    }
 
-    await fs.unlinkSync(req.files.img.tempFilePath);
+      await fs.unlink(req.files.img.tempFilePath);
+      console.log("Archivo temporal eliminado:", req.files.img.tempFilePath);
+    } else {
+      console.log("No se ha recibido ninguna imagen.");
+    }
 
     await event.save();
     res.status(201).json(event);
@@ -167,33 +168,19 @@ export const DeleteEvents = async (req, res) => {
 
 export const AddAtletaEvento = async (req, res) => {
   try {
-    const { usuario_id } = req.session;
     const { id } = req.params;
-    const { document} = req.body;
-    const entrenador = await Entrenador.findById(usuario_id).populate(
-      "athletes"
-    );
-    if (!entrenador) {
-      return res
-        .status(404)
-        .json({ message: "Entrenador no encontrado", Status: "404" });
-    }
-    const atletaExiste = entrenador.athletes.some(
-      (athlete) => athlete.document === document
-    );
-    if (atletaExiste) {
-      return res.status(400).json({
-        message: "El atleta ya está asignado a este entrenador",
-        Status: "400",
-      });
-    }
+    const { document } = req.body;
+
     const atleta = await Atleta.findOne({ document: document });
     if (!atleta) {
       return res
         .status(404)
         .json({ message: "Atleta no encontrado", Status: "404" });
     }
-    
+    const Atletaaevent = await Event.findOne({ athletes: document });
+    if (Atletaaevent) {
+      return res.status(404).json({ message: "Atleta ya registrado" });
+    }
 
     const event = await Event.findById(id);
     if (!event) {
@@ -204,7 +191,7 @@ export const AddAtletaEvento = async (req, res) => {
 
     res
       .status(200)
-      .json({ message: "Atleta agregado con éxito", Status: "200" });
+      .json({ message: "Atleta agregado con éxito", Status: 200 });
   } catch (error) {
     res.status(500).json({
       message: "Error al agregar el atleta",
@@ -223,13 +210,18 @@ export const DeleteAtletaEvento = async (req, res) => {
     const { id } = req.params;
 
     const admin = await Administrador.findById(usuario_id);
-    const entrenador = await Entrenador.findById(usuario_id).populate("athletes");
+    const entrenador = await Entrenador.findById(usuario_id);
 
     if (!entrenador && !admin) {
-      return res.status(404).json({ message: "Entrenador o Admin no encontrado", Status: "404" });
+      return res
+        .status(404)
+        .json({ message: "Entrenador o Admin no encontrado", Status: "404" });
     }
 
-    const atleta = entrenador.athletes.some(athlete => athlete.document === documentoAtleta);
+    const atleta = entrenador.athletes.some(
+      (athlete) => String(athlete.document) === String(documentoAtleta)
+    );
+
     if (!atleta) {
       return res.status(404).json({
         message: "Atleta no encontrado en la lista del entrenador",
@@ -239,13 +231,16 @@ export const DeleteAtletaEvento = async (req, res) => {
 
     const event = await Event.findById(id);
     if (!event) {
-      return res.status(404).json({ message: "Evento no encontrado", Status: "404" });
+      return res
+        .status(404)
+        .json({ message: "Evento no encontrado", Status: "404" });
     }
 
-    event.athletes = event.athletes.filter(athlete => athlete.document !== documentoAtleta);
+    event.athletes = event.athletes.filter(
+      (athlete) => String(athlete.document) !== String(documentoAtleta)
+    );
     await event.save();
-
-    res.status(200).json({ message: "Atleta eliminado", Status: "200" });
+    res.status(200).json({ message: "Atleta eliminado", Status: 200});
   } catch (error) {
     res.status(500).json({
       message: "Error al eliminar el atleta",
@@ -257,21 +252,25 @@ export const DeleteAtletaEvento = async (req, res) => {
 
 //
 
-export const GetAtletasEvento=async(req,res)=>{
-try {
-  const { id } = req.params;
-  const evento = await Event.findById(id)
-  if (!evento) {
-    return res.status(404).json({
-      message: "Evento no encontrado",
-      status: 404,
-    });
+export const GetAtletasEvento = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const evento = await Event.findById(id);
+    if (!evento) {
+      return res.status(404).json({
+        message: "Evento no encontrado",
+        status: 404,
+      });
+    }
+    const athletes = await Atleta.find({ document: { $in: evento.athletes } });
+    return res.status(200).json({ athletes });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({
+        message: "Error al obtener los atletas del evento",
+        status: 500,
+        error: error,
+      });
   }
-  const atletas = await Atleta.find({ document: { $in: evento.athletes } });
-  return res.status(200).json({ atletas });
-  
-} catch (error) {
-  return res.status(500).json({message:"Error al obtener los atletas del evento",status:500,error:error})
-}
 };
-

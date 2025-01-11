@@ -10,9 +10,8 @@ import fileUpload from "express-fileupload";
 
 const router = Router();
 
-router.get(["/", "/productos"], getProducts);
-
-router.get("/productos/producto/:id?", getProduct);
+router.get("/productos", getProducts);
+router.get("/productos/:id?", getProduct);
 
 router.post("/productos",
               fileUpload({
@@ -20,8 +19,7 @@ router.post("/productos",
                 tempFileDir: "./uploads",
               }),createProducts);
 
-router.put("/productos/:id", updateProducts);
-
-router.delete("/productos/:id", deleteProducts);
+router.put("/productos/:id?", updateProducts);
+router.delete("/productos/:id?", deleteProducts);
 
 export default router;

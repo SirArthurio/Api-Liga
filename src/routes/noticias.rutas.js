@@ -10,9 +10,8 @@ import fileUpload from "express-fileupload";
 
 const router = Router();
 
-router.get(["/", "/noticias"], getNoticias);
-
-router.get("/noticias/noticia/:id?", getNoticia);
+router.get("/noticias", getNoticias);
+router.get("/noticias/:id?", getNoticia);
 
 router.post(
   "/noticias",
@@ -23,8 +22,7 @@ router.post(
   createNoticias,
 );
 
-router.put("/noticias/:id", updateNoticias);
-
+router.put("/noticias/:id?", updateNoticias);
 router.delete("/noticias/:id?", deleteNoticias);
 
 export default router;

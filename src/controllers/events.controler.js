@@ -69,7 +69,9 @@ export const createEvents = async (req, res) => {
       return res.status(400).json({ message: "Falta la imagen" });
     }
     await CreateEvents(req, res);
-  } catch (error) {}
+  } catch (error) {
+    res.status(500).json({message:"erroa al crear el evento/controler", status:500, error:error})
+  }
 };
 
 //

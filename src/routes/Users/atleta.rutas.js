@@ -12,15 +12,20 @@ import fileUpload from "express-fileupload";
 
 const router = Router();
 
-router.get("/user", getAtleta);
-router.get("/users", getAtletas);
+router.get("/atletas", getAtletas); // ?idEntrenador=:idEntrenador?&idAtleta=:idAtleta?
+router.get("/atletas/atleta", getAtleta);
+// router.get("/atletas", getAtletas);
+// router.get("/entrenadores/:id?/atletas/:id?", getAtletaEntrenador);
+// router.get("/entrenadores/:id?/atletas", getAtletasEntrenador);
 
-router.put("/update", updateAtleta);
-router.put("/sport/add", addSportAtleta);
-router.put("/sport/delete", deleteSportAtleta);
+
+router.put("/atletas/:id?", updateAtleta);
+router.put("/atletas/:id?/deportes", addSportAtleta);
+router.delete("/atletas/:id?/deportes/:id?", deleteSportAtleta);
+
 
 router.post(
-  "/register",
+  "/atletas",
   fileUpload({
     useTempFiles: true,
     tempFileDir: "../uploads",
@@ -28,5 +33,5 @@ router.post(
   createAtleta
 );
 
-router.delete("/delete", deleteAtleta);
+router.delete("/atletas", deleteAtleta);
 export default router;

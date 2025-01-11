@@ -5,7 +5,7 @@ import {
   DeleteUser,
   GetUsers,
   UpdateUser,
-GetUserPerfil} from "../../models/Users/User.model.js";
+GetUserPerfil,Me} from "../../models/Users/User.model.js";
 import {
   BaseUser,
   documentExist,
@@ -163,3 +163,15 @@ export const updateUser = async (req, res) => {
     });
   }
 };
+
+export const me =async(req,res)=>{
+  try {
+    await Me(req,res);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al obtener ifno del usuario/controlador",
+      status: 500,
+      error: error,
+    });
+  }
+  };

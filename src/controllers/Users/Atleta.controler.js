@@ -25,20 +25,21 @@ export const getAtletas = async (req, res) => {
 //
 export const getAtleta = async (req, res) => {
   try {
-    const { document } = req.body;
+    const { document } = req.query; 
     if (!document) {
       return res
-        .status(404)
-        .json({ messsage: "y el documento?", status: "404" });
+        .status(400) 
+        .json({ message: "¿Y el documento?", status: "400" });
     }
-    await GetAtleta(document, res);
+    await GetAtleta(document, res); 
   } catch (error) {
     res.status(500).json({
-      message: "error al obtener el atleta/controlador",
+      message: "Error al obtener el atleta/controlador",
       status: "500",
     });
   }
 };
+
 //
 export const deleteAtleta = async (req, res) => {
   try {

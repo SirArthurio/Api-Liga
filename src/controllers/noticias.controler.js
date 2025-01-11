@@ -90,9 +90,6 @@ export const updateNoticias = async (req, res) => {
     if (!category)
       return res.status(400).json({ message: "La categoría es obligatoria" });
 
-    if (!req.files?.img)
-      return res.status(400).json({ message: "La imagen es obligatoria" });
-
     await actualizarNoticia(req, res);
   } catch (error) {
     res.status(500).json({ message: "error", error });

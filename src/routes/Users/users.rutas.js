@@ -5,12 +5,12 @@ import {
   deleteUser,
   getUser,
   updateUser,
-  getUserPerfil
+  getUserPerfil,me
 } from "../../controllers/Users/User.controler.js";
 import fileUpload from "express-fileupload";
 
 const router = Router();
-
+router.get("/me", me);
 router.get("/user", getUser);
 router.get("/user/usuario", getUserPerfil);
 router.get("/", getUsers);

@@ -1,5 +1,6 @@
 import {
   CreateEntrenador,
+  UpdateEntrenador,
   DeleteEntrenador,
   GetAtletaEntrenador,
   GetEntrenador,
@@ -12,6 +13,7 @@ import {
   documentExist,
   userExist,
 } from "../../models/Users/BaseUser.models.js";
+import {UpdateAtleta} from "../../models/Users/Atleta.model.js";
 
 export const getAtletasEntrenador = async (req, res) => {
   try {
@@ -48,19 +50,15 @@ export const getAtletaEntrenador = async (req, res) => {
 
 export const getEntrenador = async (req, res) => {
   try {
-    const { document } = req.body;
-    if (!document) {
+    const { id } = req.params;
+    if (!id) {
       return res
         .status(400)
         .json({ message: "El id es obligatorio", Status: "400" });
     }
     await GetEntrenador(req, res);
   } catch (error) {
-    return res.status(500).json({
-      message: "Error al obtener el Entrenador/controlador",
-      Error: error,
-      Status: "500",
-    });
+
   }
 };
 export const getEntrenadores = async (req, res) => {
@@ -118,11 +116,11 @@ export const createEntrenador = async (req, res) => {
         .status(400)
         .json({ message: "El nombre es obligatorio", Status: "400" });
     }
-    if (!levelUser) {
-      return res
-        .status(400)
-        .json({ message: "El nivel es obligatorio", Status: "400" });
-    }
+    // if (!levelUser) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "El nivel es obligatorio", Status: "400" });
+    // }
     if (!documentType) {
       return res.status(400).json({
         message: "El tipo de documento es obligatorio",
@@ -145,11 +143,7 @@ export const createEntrenador = async (req, res) => {
         .status(400)
         .json({ message: "La contraseña es obligatoria", Status: "400" });
     }
-    if (!req.files?.img) {
-      return res
-        .status(400)
-        .json({ message: "La imagen es obligatoria", Status: "400" });
-    }
+
     await CreateEntrenador(req, res);
   } catch (error) {
     res
@@ -158,6 +152,36 @@ export const createEntrenador = async (req, res) => {
   }
 };
 //
+
+
+
+export const updateEntrenador = async (req, res) => {
+  try {
+    try {
+      const { document } = req.body;
+      if (!document) {
+        return res
+            .status(404)
+            .json({ message: "el documento es obligatorio", status: 404 });
+      }
+      await UpdateAtleta(req, res);
+    } catch (error) {
+      res.status(500).json({
+        message: "Error al actualizar el usuario/controlador",
+        status: 500,
+        error: error,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "error al actualizar el atleta controlador",
+      status: 500,
+      error: error,
+    });
+  }
+};
+
+
 export const deleteAtletaEntrenador = async (req, res) => {
   try {
     const { usuario_id } = req.body;

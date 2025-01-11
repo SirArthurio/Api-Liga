@@ -131,9 +131,18 @@ export const UpdateUser = async (req, res) => {
       { name, documentType, password },
       { new: true }
     );
-
-    
   } catch (error) {
     res.status(500).json({ message: "Error al actualizar el Usuario", error });
+  }
+};
+export const Me = (req, res) => {
+  try {
+    if (req.session) {
+      return res.status(200).json({ user: req.session.user });
+    } else {
+      return res.status(401).json({ message: "No autenticado" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener el Usuario", error });
   }
 };

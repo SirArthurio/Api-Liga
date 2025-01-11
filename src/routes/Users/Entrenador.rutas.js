@@ -7,18 +7,19 @@ import {
   deleteEntrenador,
   deleteAtletaEntrenador,
   addAtletaEntrenador,
-  getEntrenadores
+  getEntrenadores, updateEntrenador
 } from "../../controllers/Users/Entrenador.controler.js";
 import fileUpload from "express-fileupload";
+import {updateAtleta} from "../../controllers/Users/Atleta.controler.js";
 
 const router = Router();
-router.get("/users", getEntrenadores);
-router.get("/user", getEntrenador);
+router.get("/entrenadores", getEntrenadores);
+router.get("/entrenadores/:id?", getEntrenador);
 router.get("/atleta", getAtletaEntrenador);
 router.get("/atletas", getAtletasEntrenador);
 
 router.post(
-  "/register",
+  "/entrenadores",
   fileUpload({
     useTempFiles: true,
     tempFileDir: "../uploads",
@@ -26,9 +27,10 @@ router.post(
   createEntrenador
 );
 
-router.put("/atleta/add",addAtletaEntrenador);
-router.put("/atleta/delete", deleteAtletaEntrenador);
+router.put("/entrenadores/:id?", updateEntrenador);
+router.put("/entrenadores/atletas/",addAtletaEntrenador);
+router.delete("/entrenadores/atletas/delete", deleteAtletaEntrenador);
 
-router.delete("/delete", deleteEntrenador);
+router.delete("/entrenadores", deleteEntrenador);
 
 export default router;

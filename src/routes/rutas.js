@@ -11,15 +11,15 @@ import RutasEntrenadores from "./Users/Entrenador.rutas.js";
 import RutasFactura from "./factura.rutas.js";
 
 const Rutas = Router();
-Rutas.use(["/", "/productos"], RutasProductos);
-Rutas.use(["/", "/eventos"], RutasEventos);
-Rutas.use(["/", "/noticias"], RutasNoticias);
-Rutas.use(["/user/"], RutasUsuarios);
-Rutas.use(["/admin/"], RutasAdministrador);
-Rutas.use(["/atletas/"], RutasAtletas);
-Rutas.use(["/entrenadores/"], RutasEntrenadores);
-Rutas.use([ "/carrito"], RutasCarrito);
-Rutas.use(["/login"], RutaLogin);
-Rutas.use(["/factura"], RutasFactura);
+Rutas.use(["/"], RutasProductos);
+Rutas.use(["/"], RutasEventos);
+Rutas.use(["/"], RutasNoticias);
+Rutas.use(["/user"], RutasUsuarios);
+Rutas.use(["/"], RutasAdministrador);
+Rutas.use(["/"], RutasAtletas);
+Rutas.use(["/"], RutasEntrenadores);
+Rutas.use(["/carritos"], RutasCarrito);
+Rutas.use(["/"], RutaLogin);
+Rutas.use(["/facturas"], RutasFactura);
 
 export default Rutas;

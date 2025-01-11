@@ -10,7 +10,7 @@ const coachSchema = new mongoose.Schema({
       type: Number,
       ref: "Atleta",
       required: false,
-    },
+    }
   ],
 });
 
@@ -40,17 +40,18 @@ export const CreateEntrenador = async (req, res) => {
       athletes,
     });
 
+  
     if (req.files?.img) {
       const result = await uploadImg(req.files.img.tempFilePath);
       newUser.img = {
         public_id: result.public_id,
         secure_url: result.secure_url,
       };
+      fs.unlinkSync(req.files.img.tempFilePath);
     } else {
       console.log("No se ha recibido ninguna imagen.");
     }
 
-     fs.unlinkSync(req.files.img.tempFilePath);
     await newUser.save();
     res
       .status(201)
@@ -64,6 +65,35 @@ export const CreateEntrenador = async (req, res) => {
   }
 };
 ///
+
+export const UpdateEntrenador = async (req, res) => {
+  try {
+    const { document, name, documentType, password, sport } = req.body;
+    const updateEntrenador = await Atleta.findOneAndUpdate(
+        { document },
+        { name, documentType, password, sport },
+        { new: true, runValidators: true }
+    );
+    if (!updateEntrenador) {
+      return res.status(404).json({
+        message: "Atleta no encontrado",
+        status: 404,
+      });
+    }
+
+    res.status(200).json({
+      message: "Atleta actualizado exitosamente",
+      atleta: updateEntrenador,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al actualizar el atleta",
+      error: error,
+      status: 500,
+    });
+  }
+};
+
 export const GetAtletasEntrenador = async (req, res) => {
   try {
     const { usuario_id } = req.session;
@@ -87,8 +117,8 @@ export const GetAtletasEntrenador = async (req, res) => {
 ///
 export const GetEntrenador = async (req, res) => {
   try {
-    const document = req.body;
-    const user = await Entrenador.findOne(document);
+    const {id} = req.params;
+    const user = await Entrenador.findById(id);
     if (!user || user.length === 0) {
       return res
         .status(404)
@@ -156,7 +186,7 @@ export const GetAtletaEntrenador = async (req, res) => {
 export const DeleteEntrenador = async (req, res) => {
   try {
     const { documento } = req.body;
-    const entrenador = await Entrenador.findByIdAndDelete(documento);
+    const entrenador = await Entrenador.findOneAndDelete(documento);
     if (!entrenador) {
       return res
         .status(404)
@@ -201,7 +231,7 @@ export const DeleteAtletaEntrenador = async (req, res) => {
     );
     await entrenador.save();
 
-    res.status(200).json({ message: "Atleta eliminado", Status: "200" });
+    res.status(200).json({ message: "Atleta eliminado de la lista", Status: "200" });
   } catch (error) {
     res.status(500).json({
       message: "Error al eliminar el atleta",

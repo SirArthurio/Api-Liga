@@ -69,6 +69,9 @@ export const DeleteUser = async (req, res) => {
 export const GetUser = async (req, res) => {
   try {
     const { document } = req.body;
+    if (!document){
+      return
+    }
     const user = await Usuario.findOne(document);
     if (!user) {
       return res

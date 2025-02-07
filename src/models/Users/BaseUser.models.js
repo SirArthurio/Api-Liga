@@ -1,4 +1,8 @@
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
+import cookieParser from "cookie-parser";
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const options = { discriminatorKey: "levelUser", timestamps: true };
 
@@ -66,37 +70,52 @@ export const Login = async (req) => {
       return { status: false, message: "Contraseña incorrecta" };
     }
     const { password: _, ...userWithoutPassword } = userDB.toObject();
-    
-    return { status: true, user: userWithoutPassword };
+
+    const dataUser = await BaseUser.findOne({ user: user });
+
+    const token = jwt.sign(
+      { levelUser: dataUser.levelUser, nombre: dataUser.name },
+      JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    return { status: true, user: userWithoutPassword, token };
   } catch (error) {
     return { status: false, error: "Error en el servidor" };
   }
 };
 
-export const Check=async(req,res)=>{
-  try {
-    if (req.session.user) {
-      return res.status(200).json({ message: "Usuario logueado", user: req.session.user, status:true });
-    } else {
-      return res.status(401).json({ message: "No estás logueado",status:false  });
-    }
-  } catch (error) {
-    return { status: false, error: "Error al chekear" };
+export const Check = (req, res) => {
+  const token = req.cookies.jwt;
+
+  console.log("Cookie mi_sesion:", token);
+
+  if (!token) {
+    return res
+      .status(401)
+      .json({ status: false, message: "No token provided" });
   }
-}
 
-
-export const Logout=async(req,res)=>{
   try {
-    req.session.destroy(err => {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return res.status(200).json({ status: true, user: decoded });
+  } catch (error) {
+    return res.status(401).json({ status: false, message: "Invalid token" });
+  }
+};
+
+export const Logout = async (req, res) => {
+  try {
+    req.session.destroy((err) => {
       if (err) {
         console.error("Error al destruir la sesión:", err);
         return res.status(500).send("No se pudo cerrar sesión");
       }
-      res.clearCookie('mi_sesion'); 
+      res.clearCookie("mi_sesion");
+      res.clearCookie("jwt");
       res.status(200).send("Sesión cerrada correctamente");
     });
   } catch (error) {
     return { status: false, error: "Error en el servidor" };
   }
-}
+};

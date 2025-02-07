@@ -1,4 +1,4 @@
-import { Login, Logout,Check } from "../../models/Users/BaseUser.models.js";
+import { Login, Logout, Check } from "../../models/Users/BaseUser.models.js";
 
 export const login = async (req, res) => {
   try {
@@ -13,16 +13,24 @@ export const login = async (req, res) => {
         .status(400)
         .json({ message: "La contraseña es obligatoria", status: false });
     }
-    const { status, message, user: userData } = await Login(req);
+    const { status, message, user: userData, token } = await Login(req);
 
     if (status) {
       req.session.usuario_id = userData._id;
       console.log("Sesión creada:", req.session);
 
+      res.cookie("jwt", token, {
+        maxAge: 1000 * 60 * 60 * 24,
+        httpOnly: true,
+        secure: false, // Cambia a true en producción si usas HTTPS
+        sameSite: "lax",
+      });
+
       return res.status(200).json({
         message: "Logueado con éxito",
         status: true,
         user: userData,
+        token,
       });
     } else {
       return res.status(400).json({
@@ -39,18 +47,18 @@ export const login = async (req, res) => {
   }
 };
 
-export const logout=async(req,res)=>{
-try {
-  await Logout(req,res);
-} catch (error) {
-  return res.status(500).json({message:"error al cerrar sesion"});
-}
+export const logout = async (req, res) => {
+  try {
+    await Logout(req, res);
+  } catch (error) {
+    return res.status(500).json({ message: "error al cerrar sesion" });
+  }
 };
 
-export const check=async(req,res)=>{
+export const check = async (req, res) => {
   try {
-    await Check(req,res);
+    await Check(req, res);
   } catch (error) {
-    return res.status(500).json({message:"error al chekear sesion"});
+    return res.status(500).json({ message: "error al chekear sesion" });
   }
-}
+};

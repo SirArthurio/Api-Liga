@@ -5,7 +5,9 @@ import {
   DeleteUser,
   GetUsers,
   UpdateUser,
-GetUserPerfil,Me} from "../../models/Users/User.model.js";
+  GetUserPerfil,
+  Me,
+} from "../../models/Users/User.model.js";
 import {
   BaseUser,
   documentExist,
@@ -116,6 +118,7 @@ export const deleteUser = async (req, res) => {
   }
 };
 
+//Verificar del tipo de usuario que viene, limitar el numero de peticiones(infinito numero de peticiones- Se cae el servidor)
 export const getUser = async (req, res) => {
   try {
     const { document } = req.body;
@@ -132,7 +135,7 @@ export const getUser = async (req, res) => {
 
 export const getUserPerfil = async (req, res) => {
   try {
-    const { usuario_id  } = req.session;
+    const { usuario_id } = req.session;
     const id = usuario_id;
     if (!id) {
       return res.status(404).json({ message: "no hay id", status: "404" });
@@ -144,6 +147,7 @@ export const getUserPerfil = async (req, res) => {
       .json({ message: "Error al obtener el Usuario", error: error });
   }
 };
+
 export const updateUser = async (req, res) => {
   try {
     const { usuario_id } = req.session;
@@ -154,7 +158,9 @@ export const updateUser = async (req, res) => {
         .json({ message: "No se encuentra el usuario", status: 404 });
     }
     await UpdateUser(req, res);
-    return res.status(200).json({message:"Se actualizo esa vaina", status:200})
+    return res
+      .status(200)
+      .json({ message: "Se actualizo esa vaina", status: 200 });
   } catch (error) {
     res.status(500).json({
       message: "Error al actualizar el usuario/controlador",
@@ -164,9 +170,9 @@ export const updateUser = async (req, res) => {
   }
 };
 
-export const me =async(req,res)=>{
+export const me = async (req, res) => {
   try {
-    await Me(req,res);
+    await Me(req, res);
   } catch (error) {
     res.status(500).json({
       message: "Error al obtener ifno del usuario/controlador",
@@ -174,4 +180,4 @@ export const me =async(req,res)=>{
       error: error,
     });
   }
-  };
+};

@@ -71,10 +71,8 @@ export const Login = async (req) => {
     }
     const { password: _, ...userWithoutPassword } = userDB.toObject();
 
-    const dataUser = await BaseUser.findOne({ user: user });
-
     const token = jwt.sign(
-      { levelUser: dataUser.levelUser, nombre: dataUser.name },
+      { levelUser: userDB.levelUser, nombre: userDB.name,imagen: userDB.img.secure_url },
       JWT_SECRET,
       { expiresIn: "1h" }
     );

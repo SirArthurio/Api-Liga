@@ -13,23 +13,22 @@ export const login = async (req, res) => {
         .status(400)
         .json({ message: "La contraseña es obligatoria", status: false });
     }
-    const { status, message, user: userData, token } = await Login(req);
-
+    const { status, message, user: userDB, token } = await Login(req);
+    console.log("userDB", userDB);
     if (status) {
-      req.session.usuario_id = userData._id;
-      console.log("Sesión creada:", req.session);
-
+      req.session.usuario_id = userDB._id;
+      console.log("Sesión creada 1:", req.session);
       res.cookie("jwt", token, {
         maxAge: 1000 * 60 * 60 * 24,
         httpOnly: true,
-        secure: false, // Cambia a true en producción si usas HTTPS
+        secure: false, 
         sameSite: "lax",
       });
 
       return res.status(200).json({
         message: "Logueado con éxito",
         status: true,
-        user: userData,
+        user: userDB,
         token,
       });
     } else {

@@ -70,7 +70,7 @@ export const AddToCarrito = async (req, res) => {
     const { product_id, amount, size } = req.body;
     const { usuario_id } = req.session;
 
-    // Verificar si el usuario está logueado
+  
     if (!usuario_id) {
       return res.status(401).json({
         success: false,

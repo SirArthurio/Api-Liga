@@ -1,0 +1,16 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 60
+      arrivalRate: 10
+scenarios:
+  - name: "Prueba API"
+    flow:
+      - post:
+          url: "/eventos"
+      - get:
+          url: "/facturas/getall"
+
+
+        
+

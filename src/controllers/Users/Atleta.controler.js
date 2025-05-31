@@ -70,20 +70,12 @@ export const createAtleta = async (req, res) => {
       birthdate,
       sport,
     } = req.body;
-    if (
-      !name &&
-      !coach &&
-      !user &&
-      !password &&
-      !document &&
-      !documentType &&
-      !birthdate &&
-      !sport
-    ) {
-      return res
-        .status(404)
-        .json({ message: "Los campos son obligatorios", status: "404" });
-    }
+    if (!name || !coach || !user || !password || !document || !documentType || !birthdate || !sport) {
+  return res.status(400).json({ 
+    message: "Todos los campos son obligatorios", 
+    status: "400" 
+  });
+}
     if (await documentExist(document)) {
       return res.status(400).json({
         message: "Documento ya existe, por favor ingrese otro",
